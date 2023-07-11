@@ -48,9 +48,22 @@ def ReleaseKey(hexKeyCode):
     x = Input( ctypes.c_ulong(1), ii_ )
     ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
 
-# A = 0x1E
+def move_mouse(x, y):
+    extra = ctypes.c_ulong(0)
+    ii_ = Input_I()
+    ii_.mi = MouseInput(x, y, 0, 0x0001, 0, ctypes.pointer(extra))
+    x = Input( ctypes.c_ulong(0), ii_ )
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+def click_mouse(x, y):
+    move_mouse(x, y)
+    extra = ctypes.c_ulong(0)
+    ii_ = Input_I()
+    ii_.mi = MouseInput(x, y, 0, 0x0002, 0, ctypes.pointer(extra))
+    x = Input( ctypes.c_ulong(0), ii_ )
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
 A = 0x10
-# Z = 0x2C
 Z = 0x11
 E = 0x12
 R = 0x13

@@ -1,0 +1,9 @@
+gymnasium
+numpy
+Pillow
+screeninfo
+opencv-python
+psutil
+pygetwindow 
+pyautogui
+keyboard

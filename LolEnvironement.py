@@ -1,7 +1,7 @@
 import gymnasium as gym
 import numpy as np
 
-from controller import  A, Z, E, R, D, F, PressKey, ReleaseKey
+from controller import  A, Z, E, R, D, F,PressKey, ReleaseKey
 from PIL import ImageGrab
 from screeninfo import get_monitors
 import time
@@ -11,7 +11,7 @@ import cv2
 class LoLGame(gym.Env):
     def __init__(self):
         super(LoLGame, self).__init__()
-        self.action_space = gym.spaces.Discrete(6)  # Six actions: A, Z, E, R, D, F
+        self.action_space = gym.spaces.Discrete(6)  # 8 actions A, Z, E, R, D, F, RightClick, LeftClick
         self.observation_space = gym.spaces.Box(low=0, high=255, shape=(1080, 1920))            
 
     def step(self, action):
@@ -31,10 +31,11 @@ class LoLGame(gym.Env):
         return new_screen, reward, done, {}
 
     def _perform_action(self, action):
-        # Map the action index to the actual game control
+       # Map the action index to the actual game control
         # Like if action is 0, then press 'A', if action is 1, then press 'Z', etc.
         key_mapping = {0: A, 1: Z, 2: E, 3: R, 4: D, 5: F}
         key_to_press = key_mapping[action]
+        print(key_to_press)
         PressKey(key_to_press)
         time.sleep(0.1)  # adjust this delay as needed
         ReleaseKey(key_to_press)
@@ -72,8 +73,8 @@ class LoLGame(gym.Env):
         pass
 
     def reset(self):
-        self._reset_game()  # This should be a function that resets your game
-        screen = np.array(ImageGrab.grab(bbox=(0,0, get_monitors()[0].width, get_monitors()[0].height)))
+        self._reset_game()
+        screen = np.array(ImageGrab.grab(bbox=(0, 0, get_monitors()[0].width, get_monitors()[0].height)))
         initial_state = process_img(screen)
         return initial_state
 
@@ -88,12 +89,10 @@ def roi(img,vertices):
 def process_img(original_image):
     processed_img = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
     processed_img = cv2.Canny(processed_img, threshold1=200, threshold2=300)
-    processed_img = cv2.resize(processed_img, (84, 84))  # example resize
+    processed_img = cv2.resize(processed_img, (get_monitors()[0].width, get_monitors()[0].height))
 
-    # Get image size
     height = processed_img.shape[0]
     width = processed_img.shape[1]
-    # Define the vertices for the full screen
     vertices = np.array([[0, height], [0, 0], [width, 0], [width, height]], np.int32)
     processed_img = roi(processed_img, [vertices])
     return processed_img
